@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Español con colores</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#1B1B3A; --paper:#F3F6FF; --white:#fff;
+  --blue:#7C8CFF; --pink:#FF8CC3; --mint:#4FD6B5; --orange:#FFA24D; --yellow:#FFD84D; --lilac:#B79CFF;
+  --display:"Fredoka","Trebuchet MS",system-ui,sans-serif;
+  --body:"Nunito Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--body);color:var(--ink);background:var(--paper);line-height:1.6;font-size:1.05rem;
+  background-image:radial-gradient(var(--ink) 1px,transparent 1.2px);background-size:26px 26px;background-attachment:fixed;
+  background-color:var(--paper)}
+body::before{content:"";position:fixed;inset:0;background:rgba(243,246,255,.93);z-index:-1}
+a{color:inherit}
+:focus-visible{outline:4px solid var(--ink);outline-offset:3px;border-radius:8px}
+h1,h2,h3{font-family:var(--display);line-height:1.1}
+.wrap{max-width:1040px;margin:0 auto;padding:0 20px}
+
+/* Navegación */
+nav{position:sticky;top:0;z-index:10;background:var(--yellow);border-bottom:4px solid var(--ink)}
+nav .wrap{display:flex;gap:10px;align-items:center;overflow-x:auto;padding:10px 20px;scrollbar-width:none}
+nav .logo{font-family:var(--display);font-weight:700;font-size:1.3rem;text-decoration:none;white-space:nowrap;margin-right:8px}
+nav a.tab{font-family:var(--display);font-weight:600;text-decoration:none;white-space:nowrap;padding:6px 16px;border:3px solid var(--ink);border-radius:999px;background:var(--white);transition:transform .15s}
+nav a.tab:hover{transform:translateY(-3px) rotate(-2deg)}
+nav a.tab[aria-current="page"]{background:var(--ink);color:var(--white)}
+
+/* Secciones */
+section.page{display:none;padding:36px 0 70px}
+section.page.on{display:block}
+.page-title{font-size:clamp(2rem,6vw,3.4rem);margin-bottom:6px}
+.page-sub{max-width:60ch;margin-bottom:26px}
+.sticker{display:inline-block;border:3px solid var(--ink);border-radius:14px;padding:2px 12px;font-family:var(--display);font-weight:600;background:var(--c,var(--yellow))}
+
+/* Inicio */
+.hero{padding:30px 0 10px}
+.hero h1{font-size:clamp(3.4rem,13vw,8rem);letter-spacing:-.02em}
+#saludo{display:inline-block;padding:0 .2em;background:var(--pink);border:4px solid var(--ink);border-radius:28px;box-shadow:8px 8px 0 var(--ink);transform:rotate(-2deg);transition:background .3s}
+.hero p{margin-top:26px;max-width:46ch;font-size:1.2rem}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:22px;margin-top:40px}
+.tile{display:block;text-decoration:none;background:var(--c);border:4px solid var(--ink);padding:20px;box-shadow:6px 6px 0 var(--ink);transition:transform .15s,box-shadow .15s}
+.tile:nth-child(odd){border-radius:30px 12px 30px 12px}
+.tile:nth-child(even){border-radius:12px 30px 12px 30px}
+.tile:hover{transform:translate(-3px,-3px);box-shadow:9px 9px 0 var(--ink)}
+.tile .em{font-size:2.4rem;display:block}
+.tile h2{font-size:1.5rem;margin:6px 0 4px}
+.tile p{font-size:.95rem}
+
+/* Tarjetas y recursos */
+.chips{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:22px}
+.chip{font:600 1rem var(--display);cursor:pointer;border:3px solid var(--ink);border-radius:999px;padding:6px 16px;background:var(--white);color:var(--ink)}
+.chip[aria-pressed="true"]{background:var(--c,var(--ink));box-shadow:4px 4px 0 var(--ink)}
+.panel{background:var(--white);border:4px solid var(--ink);border-radius:26px;padding:26px;box-shadow:8px 8px 0 var(--c,var(--ink))}
+.panel h2{font-size:1.9rem;margin-bottom:4px}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:26px;margin-top:20px}
+.cols h3{font-size:1.3rem;margin-bottom:10px}
+ul.list{list-style:none;padding:0;display:grid;gap:10px}
+ul.list a,.res{display:flex;gap:12px;align-items:center;text-decoration:none;border:3px solid var(--ink);border-radius:14px;padding:10px 14px;background:var(--paper);font-weight:600}
+ul.list a:hover{background:var(--yellow)}
+.res .ico{font-size:1.4rem}
+.res small{display:block;font-weight:400;font-size:.85rem}
+
+/* Tareas */
+.task{display:flex;gap:14px;align-items:flex-start;border:3px solid var(--ink);border-radius:14px;padding:12px 14px;background:var(--white);cursor:pointer}
+.task input{width:26px;height:26px;accent-color:var(--ink);flex:none;margin-top:2px;cursor:pointer}
+.task .t{font-weight:800}
+.task .d{font-size:.9rem}
+.task:has(input:checked){background:var(--mint)}
+.task:has(input:checked) .t{text-decoration:line-through}
+.group{margin-bottom:28px}
+.group h3{font-size:1.5rem;margin-bottom:10px}
+
+/* Acordeón gramática */
+details{border:4px solid var(--ink);border-radius:20px;background:var(--white);margin-bottom:14px;box-shadow:5px 5px 0 var(--c)}
+summary{font:600 1.3rem var(--display);padding:14px 20px;cursor:pointer;list-style:none;display:flex;justify-content:space-between;gap:12px}
+summary::after{content:"+";font-size:1.6rem;line-height:1}
+details[open] summary::after{content:"−"}
+details .in{padding:0 20px 18px}
+details table{border-collapse:collapse;margin-top:10px}
+details td,details th{border:2px solid var(--ink);padding:4px 12px;text-align:left}
+details th{background:var(--c)}
+
+/* Noticias */
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:22px}
+.card{background:var(--white);border:4px solid var(--ink);border-radius:22px;overflow:hidden;box-shadow:6px 6px 0 var(--ink);display:flex;flex-direction:column}
+.card .top{background:var(--c);padding:14px 18px;border-bottom:4px solid var(--ink);font-family:var(--display);font-weight:600}
+.card .body{padding:16px 18px;flex:1;display:flex;flex-direction:column;gap:10px;align-items:flex-start}
+.btn{display:inline-block;text-decoration:none;font:600 1rem var(--display);background:var(--ink);color:var(--white);border-radius:999px;padding:8px 20px;border:3px solid var(--ink)}
+.btn:hover{background:var(--white);color:var(--ink)}
+
+/* Canciones y cultura */
+.media{aspect-ratio:16/9;width:100%;border:3px solid var(--ink);border-radius:14px;background:var(--ink);color:var(--white);display:flex;align-items:center;justify-content:center;text-align:center;overflow:hidden}
+.media iframe{width:100%;height:100%;border:0}
+.media button{font:600 1.1rem var(--display);cursor:pointer;border:3px solid var(--ink);border-radius:999px;padding:10px 22px;background:var(--yellow);color:var(--ink)}
+.media button:hover{background:var(--white)}
+.media small{padding:12px;font-size:.9rem}
+.tags{display:flex;flex-wrap:wrap;gap:6px}
+.tags span{font-size:.85rem;font-weight:800;border:2px solid var(--ink);border-radius:999px;padding:0 10px;background:var(--paper)}
+.card .body .links{display:flex;gap:10px;flex-wrap:wrap}
+.btn.alt{background:var(--white);color:var(--ink)}
+.btn.alt:hover{background:var(--yellow)}
+.fiche ul{padding-left:1.2em;display:grid;gap:4px;margin:8px 0 12px}
+.fiche .tema{font:600 .9rem var(--display);font-weight:600;margin-right:8px}
+
+/* Foro */
+.embed{border:4px dashed var(--ink);border-radius:22px;background:var(--white);padding:26px;text-align:center}
+.embed iframe{width:100%;height:560px;border:0;border-radius:14px}
+.rules{margin-top:18px;padding-left:1.2em}
+.hidden{display:none!important}
+footer{border-top:4px solid var(--ink);background:var(--ink);color:var(--white);padding:22px 0;text-align:center;font-weight:600}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+
+<nav aria-label="Principal"><div class="wrap" id="nav"></div></nav>
+
+<main class="wrap">
+  <section class="page" id="inicio">
+    <div class="hero">
+      <h1><span id="saludo">¡Hola!</span></h1>
+      <p>Aquí tienes tus clases, tus documentos, el trabajo por hacer y un rincón para conversar. Todo en un solo sitio.</p>
+    </div>
+    <div class="tiles" id="tiles"></div>
+  </section>
+
+  <section class="page" id="clases">
+    <h2 class="page-title">Mis clases</h2>
+    <p class="page-sub">Elige tu clase para ver tus documentos, recursos y tareas.</p>
+    <div class="chips" id="clase-chips" role="group" aria-label="Clases"></div>
+    <div class="panel" id="clase-panel"></div>
+  </section>
+
+  <section class="page" id="gramatica">
+    <h2 class="page-title">Gramática y lengua</h2>
+    <p class="page-sub">Fichas rápidas para todos los niveles. Abre una y repasa.</p>
+    <div id="gram"></div>
+    <h3 style="margin:26px 0 10px;font-size:1.5rem">Enlaces útiles</h3>
+    <ul class="list" id="gram-links"></ul>
+  </section>
+
+  <section class="page" id="actualidad">
+    <h2 class="page-title">Actualidad y civilización</h2>
+    <p class="page-sub">El mundo hispánico, hoy y a través de la historia. Filtra por tema.</p>
+    <div class="chips" id="news-chips" role="group" aria-label="Temas"></div>
+    <div class="cards" id="news"></div>
+  </section>
+
+  <section class="page" id="cultura">
+    <h2 class="page-title">Apuntes de cultura</h2>
+    <p class="page-sub">Fichas para entender el mundo hispánico: fiestas, arte, historia y sociedad.</p>
+    <div class="chips" id="cultura-chips" role="group" aria-label="Temas de cultura"></div>
+    <div id="cultura-list"></div>
+  </section>
+
+  <section class="page" id="canciones">
+    <h2 class="page-title">Canciones</h2>
+    <p class="page-sub">Pulsa «Ver vídeo» para escuchar. Después, haz la actividad de cada canción.</p>
+    <div class="chips" id="cancion-chips" role="group" aria-label="Niveles"></div>
+    <div class="cards" id="canciones-list"></div>
+  </section>
+
+  <section class="page" id="tareas">
+    <h2 class="page-title">Trabajo por hacer</h2>
+    <p class="page-sub">Marca lo que ya has hecho. Tu progreso se guarda en este navegador.</p>
+    <div id="all-tasks"></div>
+  </section>
+
+  <section class="page" id="foro">
+    <h2 class="page-title">Foro</h2>
+    <p class="page-sub">Pregunta, comparte y ayuda a tus compañeros. En español, claro.</p>
+    <div class="chips" id="foro-chips" role="group" aria-label="Foros"></div>
+    <div class="embed" id="foro-embed"></div>
+    <ul class="rules">
+      <li>Usa solo tu nombre de pila. Sin datos personales ni fotos.</li>
+      <li>Escribe con respeto. Los errores sirven para aprender.</li>
+      <li>Antes de preguntar, mira si ya existe la respuesta.</li>
+    </ul>
+  </section>
+
+  <section class="page" id="atscaf">
+    <h2 class="page-title">ATSCAF</h2>
+    <p class="page-sub">Espacio de los grupos de adultos: materiales, tareas y conversación.</p>
+    <div class="chips" id="atscaf-chips" role="group" aria-label="Grupos ATSCAF"></div>
+    <div class="panel" id="atscaf-panel"></div>
+  </section>
+</main>
+
+<footer>Español con colores · Hecho con cariño y mucho café</footer>
+
+<script>
+/* ========= EDITA AQUÍ TUS CONTENIDOS =========
+   Sustituye los "#" por los enlaces de tus documentos (Drive, Canva, Padlet...).
+   type: pdf | doc | video | audio | link | canva
+*/
+const DATA = {
+  clases: [
+    {id:"c1", nombre:"2nde", emoji:"🌞", color:"--yellow", desc:"Descubrir, hablar y escribir sobre lo cotidiano.",
+     recursos:[
+       {titulo:"Programa del trimestre", tipo:"pdf", nota:"Resumen de contenidos", url:"#"},
+       {titulo:"Vocabulario: la familia", tipo:"doc", nota:"Ficha imprimible", url:"#"},
+       {titulo:"Podcast del mes", tipo:"audio", nota:"Escucha y responde", url:"#"}],
+     tareas:[
+       {id:"c1t1", titulo:"Aprender el vocabulario de la familia", fecha:"2026-10-20"},
+       {id:"c1t2", titulo:"Grabar una presentación de 1 minuto", fecha:"2026-11-05"}]},
+    {id:"c2", nombre:"1ère", emoji:"🌶️", color:"--pink", desc:"Argumentar y comprender documentos auténticos.",
+     recursos:[
+       {titulo:"Dosier: los jóvenes y las redes", tipo:"canva", nota:"Documentos y preguntas", url:"#"},
+       {titulo:"Guía para argumentar", tipo:"pdf", nota:"Conectores y fórmulas", url:"#"}],
+     tareas:[
+       {id:"c2t1", titulo:"Preparar la expresión oral del dosier", fecha:"2026-10-24"}]},
+    {id:"c3", nombre:"Tle", emoji:"🚀", color:"--mint", desc:"Preparar el bac: nociones, comprensión y expresión.",
+     recursos:[
+       {titulo:"Las cuatro nociones del programa", tipo:"pdf", nota:"Mapa mental", url:"#"},
+       {titulo:"Método de la expresión escrita", tipo:"doc", nota:"Paso a paso", url:"#"}],
+     tareas:[
+       {id:"c3t1", titulo:"Redactar el ensayo de la semana", fecha:"2026-10-27"}]}
+  ],
+  gramatica:[
+    {titulo:"Ser y estar", color:"--yellow", html:"<p><b>Ser</b>: identidad, origen, profesión, características. <b>Estar</b>: estado, lugar, acciones en curso.</p><table><tr><th>Ser</th><th>Estar</th></tr><tr><td>Soy profesora.</td><td>Estoy cansada.</td></tr><tr><td>Madrid es grande.</td><td>Madrid está en España.</td></tr></table>"},
+    {titulo:"Pretérito indefinido o imperfecto", color:"--pink", html:"<p><b>Indefinido</b>: acción terminada (<i>ayer comí paella</i>). <b>Imperfecto</b>: descripción y hábito pasado (<i>cuando era niño, comía paella</i>).</p>"},
+    {titulo:"El subjuntivo", color:"--mint", html:"<p>Se usa para deseo, duda, emoción y opinión negativa: <i>quiero que vengas</i>, <i>dudo que sea verdad</i>, <i>no creo que tenga razón</i>.</p>"},
+    {titulo:"Conectores para argumentar", color:"--orange", html:"<p><b>Añadir</b>: además, asimismo. <b>Oponer</b>: sin embargo, no obstante. <b>Concluir</b>: en definitiva, por lo tanto.</p>"}
+  ],
+  gramLinks:[
+    {titulo:"Diccionario de la RAE", url:"https://dle.rae.es"},
+    {titulo:"Conjugador de verbos", url:"#"},
+    {titulo:"Ejercicios interactivos", url:"#"}],
+  noticias:[
+    {tema:"España", titulo:"La prensa de la semana", txt:"Tres artículos cortos con preguntas de comprensión.", url:"#", color:"--yellow"},
+    {tema:"Latinoamérica", titulo:"Día de Muertos: tradición viva", txt:"Dosier cultural con vídeo y vocabulario.", url:"#", color:"--pink"},
+    {tema:"Sociedad", titulo:"Los jóvenes y el medio ambiente", txt:"Debate y lista de expresiones útiles.", url:"#", color:"--mint"},
+    {tema:"Historia", titulo:"La Transición española", txt:"Línea del tiempo y documentos de época.", url:"#", color:"--orange"},
+    {tema:"Cultura", titulo:"Frida Kahlo y su mundo", txt:"Obras, biografía y actividad de expresión oral.", url:"#", color:"--lilac"}
+  ],
+  /* Canciones: pega en "video" el enlace de YouTube (youtube.com/watch?v=... o youtu.be/...).
+     "actividad" es opcional: enlace a la ficha o al ejercicio de la canción. */
+  canciones:[
+    {titulo:"Color esperanza", artista:"Diego Torres", nivel:"2nde", color:"--yellow", foco:"Imperativo y esperanza", video:"", actividad:""},
+    {titulo:"Vivir mi vida", artista:"Marc Anthony", nivel:"1ère", color:"--pink", foco:"Futuro y condicional", video:"", actividad:""},
+    {titulo:"La Bamba", artista:"Tradición mexicana", nivel:"ATSCAF", color:"--orange", foco:"Cultura y ritmo", video:"", actividad:""},
+    {titulo:"Gracias a la vida", artista:"Violeta Parra", nivel:"Tle", color:"--mint", foco:"Subjuntivo y poesía", video:"", actividad:""}
+  ],
+  /* Cultura: "puntos" son las ideas clave de la ficha. "enlace" es opcional (documento completo). */
+  cultura:[
+    {tema:"Fiestas", titulo:"El Día de Muertos", color:"--orange",
+     puntos:["Se celebra el 1 y 2 de noviembre en México.","Se recuerda a los difuntos con ofrendas, flores de cempasúchil y comida.","Es Patrimonio Inmaterial de la Humanidad (UNESCO)."], enlace:""},
+    {tema:"Fiestas", titulo:"Las Fallas de Valencia", color:"--pink",
+     puntos:["Fiesta de marzo con monumentos de cartón que se queman al final (la «cremà»).","Pólvora, música y desfiles en toda la ciudad."], enlace:""},
+    {tema:"Arte", titulo:"Frida Kahlo", color:"--lilac",
+     puntos:["Pintora mexicana, famosa por sus autorretratos.","Mezcla identidad, dolor y símbolos de la cultura mexicana."], enlace:""},
+    {tema:"Historia", titulo:"La Transición española", color:"--blue",
+     puntos:["Paso de la dictadura a la democracia tras la muerte de Franco (1975).","Constitución de 1978."], enlace:""},
+    {tema:"Sociedad", titulo:"Las lenguas de España", color:"--mint",
+     puntos:["Además del castellano, hay otras lenguas oficiales: catalán, gallego, euskera, entre otras.","Conviven en las comunidades correspondientes."], enlace:""}
+  ],
+  foros:[
+    {nombre:"General", color:"--yellow", padlet:""},
+    {nombre:"2nde", color:"--yellow", padlet:""},
+    {nombre:"1ère", color:"--pink", padlet:""},
+    {nombre:"Tle", color:"--mint", padlet:""},
+    {nombre:"ATSCAF", color:"--orange", padlet:""}
+  ],
+  atscaf:[
+    {id:"a1", nombre:"Principiantes", emoji:"🌱", color:"--mint", desc:"Primeros pasos para comunicarse en español.",
+     recursos:[{titulo:"Frases útiles para viajar", tipo:"pdf", nota:"Para llevar en el bolsillo", url:"#"},
+               {titulo:"Audios de pronunciación", tipo:"audio", nota:"Escucha y repite", url:"#"}],
+     tareas:[{id:"a1t1", titulo:"Presentarte en tres frases", fecha:"2026-10-22"}]},
+    {id:"a2", nombre:"Intermedio", emoji:"🌻", color:"--orange", desc:"Conversar con más soltura y entender más.",
+     recursos:[{titulo:"Dosier: la vida cotidiana", tipo:"canva", nota:"Documentos y debate", url:"#"}],
+     tareas:[{id:"a2t1", titulo:"Preparar una anécdota para el próximo encuentro", fecha:"2026-10-29"}]}
+  ]
+};
+/* ========= FIN DE LA ZONA EDITABLE ========= */
+
+const ICONOS={pdf:"📄",doc:"📝",video:"🎬",audio:"🎧",link:"🔗",canva:"🎨"};
+const PAGES=[
+  {id:"inicio",label:"Inicio",em:"🏠",c:"--yellow",d:""},
+  {id:"clases",label:"Mis clases",em:"🎒",c:"--blue",d:"Documentos y recursos de tu clase."},
+  {id:"gramatica",label:"Gramática",em:"✏️",c:"--pink",d:"Fichas y enlaces para repasar."},
+  {id:"actualidad",label:"Actualidad",em:"🌎",c:"--mint",d:"Noticias y civilización hispánica."},
+  {id:"cultura",label:"Cultura",em:"🎭",c:"--blue",d:"Apuntes de cultura, fiestas, arte e historia."},
+  {id:"canciones",label:"Canciones",em:"🎵",c:"--pink",d:"Vídeos y canciones para aprender cantando."},
+  {id:"tareas",label:"Tareas",em:"✅",c:"--orange",d:"Lo que hay que entregar y cuándo."},
+  {id:"foro",label:"Foro",em:"💬",c:"--lilac",d:"Un espacio para preguntar y compartir."},
+  {id:"atscaf",label:"ATSCAF",em:"☕",c:"--yellow",d:"Los grupos de adultos, con su propio espacio."}
+];
+const $=s=>document.querySelector(s);
+const col=v=>`var(${v})`;
+function esc(s){const d=document.createElement("div");d.textContent=s;return d.innerHTML}
+
+/* Estado guardado (por navegador) */
+let done={};
+try{done=JSON.parse(localStorage.getItem("tareas-hechas")||"{}")}catch(e){}
+function guardar(){try{localStorage.setItem("tareas-hechas",JSON.stringify(done))}catch(e){}}
+function fechaFR(f){const d=new Date(f+"T12:00:00");return d.toLocaleDateString("es-ES",{weekday:"long",day:"numeric",month:"long"})}
+
+/* Navegación */
+$("#nav").innerHTML=`<a class="logo" href="#inicio">☀️ Español con colores</a>`+
+  PAGES.slice(1).map(p=>`<a class="tab" href="#${p.id}" data-p="${p.id}">${p.label}</a>`).join("");
+$("#tiles").innerHTML=PAGES.slice(1).map(p=>`<a class="tile" href="#${p.id}" style="--c:${col(p.c)}"><span class="em" aria-hidden="true">${p.em}</span><h2>${p.label}</h2><p>${p.d}</p></a>`).join("");
+function route(){
+  const id=(location.hash||"#inicio").slice(1);
+  const ok=PAGES.some(p=>p.id===id)?id:"inicio";
+  document.querySelectorAll("section.page").forEach(s=>s.classList.toggle("on",s.id===ok));
+  document.querySelectorAll("nav .tab").forEach(a=>a.toggleAttribute("aria-current",a.dataset.p===ok)||a.removeAttribute("aria-current"));
+  document.querySelectorAll("nav .tab").forEach(a=>{if(a.dataset.p===ok)a.setAttribute("aria-current","page")});
+  window.scrollTo(0,0);
+}
+addEventListener("hashchange",route);
+
+/* Saludo animado (inicio) */
+const SALUDOS=["¡Hola!","¡Buenas!","¿Qué tal?","¡Bienvenidos!","¡Vamos!"];
+const FONDOS=["--pink","--mint","--orange","--lilac","--blue"];
+let si=0;
+if(!matchMedia("(prefers-reduced-motion:reduce)").matches){
+  setInterval(()=>{si=(si+1)%SALUDOS.length;const s=$("#saludo");s.textContent=SALUDOS[si];s.style.background=col(FONDOS[si])},2200);
+}
+
+/* Componentes */
+function recursosHTML(list){
+  return `<ul class="list">`+list.map(r=>`<li><a href="${esc(r.url)}" target="_blank" rel="noopener"><span class="ico" aria-hidden="true">${ICONOS[r.tipo]||"🔗"}</span><span>${esc(r.titulo)}<small>${esc(r.nota||"")}</small></span></a></li>`).join("")+`</ul>`;
+}
+function tareasHTML(list){
+  if(!list.length)return "<p>No hay tareas por ahora. ¡Disfruta!</p>";
+  return `<div style="display:grid;gap:10px">`+list.map(t=>`<label class="task"><input type="checkbox" data-t="${t.id}" ${done[t.id]?"checked":""}><span><span class="t">${esc(t.titulo)}</span><br><span class="d">Para el ${fechaFR(t.fecha)}</span></span></label>`).join("")+`</div>`;
+}
+function bindTareas(root){
+  root.querySelectorAll("input[data-t]").forEach(i=>i.addEventListener("change",()=>{done[i.dataset.t]=i.checked;guardar();
+    document.querySelectorAll(`input[data-t="${i.dataset.t}"]`).forEach(o=>o.checked=i.checked)}));
+}
+function grupoPanel(g,panelSel){
+  const p=$(panelSel);
+  p.style.setProperty("--c",col(g.color));
+  p.innerHTML=`<span class="sticker" style="--c:${col(g.color)}">${g.emoji} ${esc(g.nombre)}</span><h2 style="margin-top:12px">${esc(g.nombre)}</h2><p>${esc(g.desc)}</p>
+   <div class="cols"><div><h3>📚 Documentos y recursos</h3>${recursosHTML(g.recursos)}</div><div><h3>✅ Trabajo por hacer</h3>${tareasHTML(g.tareas)}</div></div>`;
+  bindTareas(p);
+}
+function selector(list,chipsSel,panelSel){
+  const box=$(chipsSel);
+  box.innerHTML=list.map((g,i)=>`<button class="chip" style="--c:${col(g.color)}" data-i="${i}" aria-pressed="${i===0}">${g.emoji} ${esc(g.nombre)}</button>`).join("");
+  box.addEventListener("click",e=>{const b=e.target.closest(".chip");if(!b)return;
+    box.querySelectorAll(".chip").forEach(c=>c.setAttribute("aria-pressed",c===b));grupoPanel(list[b.dataset.i],panelSel)});
+  grupoPanel(list[0],panelSel);
+}
+selector(DATA.clases,"#clase-chips","#clase-panel");
+selector(DATA.atscaf,"#atscaf-chips","#atscaf-panel");
+
+/* Gramática */
+$("#gram").innerHTML=DATA.gramatica.map(g=>`<details style="--c:${col(g.color)}"><summary>${esc(g.titulo)}</summary><div class="in">${g.html}</div></details>`).join("");
+$("#gram-links").innerHTML=DATA.gramLinks.map(l=>`<li><a href="${esc(l.url)}" target="_blank" rel="noopener"><span class="ico" aria-hidden="true">🔗</span>${esc(l.titulo)}</a></li>`).join("");
+
+/* Actualidad con filtro */
+const temas=["Todos",...new Set(DATA.noticias.map(n=>n.tema))];
+function pintarNoticias(t){
+  $("#news").innerHTML=DATA.noticias.filter(n=>t==="Todos"||n.tema===t).map(n=>`<article class="card"><div class="top" style="--c:${col(n.color)}">${esc(n.tema)}</div><div class="body"><h3>${esc(n.titulo)}</h3><p>${esc(n.txt)}</p><a class="btn" href="${esc(n.url)}" target="_blank" rel="noopener">Abrir dosier</a></div></article>`).join("");
+}
+$("#news-chips").innerHTML=temas.map((t,i)=>`<button class="chip" style="--c:var(--yellow)" aria-pressed="${i===0}">${esc(t)}</button>`).join("");
+$("#news-chips").addEventListener("click",e=>{const b=e.target.closest(".chip");if(!b)return;
+  document.querySelectorAll("#news-chips .chip").forEach(c=>c.setAttribute("aria-pressed",c===b));pintarNoticias(b.textContent)});
+pintarNoticias("Todos");
+
+/* Cultura con filtro */
+const temasCult=["Todos",...new Set(DATA.cultura.map(c=>c.tema))];
+function pintarCultura(t){
+  $("#cultura-list").innerHTML=DATA.cultura.filter(c=>t==="Todos"||c.tema===t).map(c=>`<details class="fiche" style="--c:${col(c.color)}"><summary><span><span class="tema">${esc(c.tema)}</span>${esc(c.titulo)}</span></summary><div class="in"><ul>${c.puntos.map(p=>`<li>${esc(p)}</li>`).join("")}</ul>${c.enlace?`<a class="btn" href="${esc(c.enlace)}" target="_blank" rel="noopener">Ver apuntes completos</a>`:""}</div></details>`).join("");
+}
+$("#cultura-chips").innerHTML=temasCult.map((t,i)=>`<button class="chip" style="--c:var(--blue)" aria-pressed="${i===0}">${esc(t)}</button>`).join("");
+$("#cultura-chips").addEventListener("click",e=>{const b=e.target.closest(".chip");if(!b)return;
+  document.querySelectorAll("#cultura-chips .chip").forEach(c=>c.setAttribute("aria-pressed",c===b));pintarCultura(b.textContent)});
+pintarCultura("Todos");
+
+/* Canciones con vídeo (YouTube sin cookies, se carga al pulsar) */
+function ytId(u){const m=(u||"").match(/(?:youtu\.be\/|v=|embed\/|shorts\/)([\w-]{11})/);return m?m[1]:null}
+function mediaHTML(c){
+  if(!c.video)return `<div class="media"><small>Pega aquí el enlace del vídeo</small></div>`;
+  const id=ytId(c.video);
+  if(id)return `<div class="media"><button type="button" data-yt="${id}" data-t="${esc(c.titulo)}">▶ Ver vídeo</button></div>`;
+  return `<div class="media"><a class="btn" style="background:var(--yellow);color:var(--ink)" href="${esc(c.video)}" target="_blank" rel="noopener">Abrir vídeo</a></div>`;
+}
+const niveles=["Todas",...new Set(DATA.canciones.map(c=>c.nivel))];
+function pintarCanciones(n){
+  $("#canciones-list").innerHTML=DATA.canciones.filter(c=>n==="Todas"||c.nivel===n).map(c=>`<article class="card"><div class="top" style="--c:${col(c.color)}">🎵 ${esc(c.titulo)}</div><div class="body">${mediaHTML(c)}<p><b>${esc(c.artista)}</b></p><div class="tags"><span>${esc(c.nivel)}</span><span>${esc(c.foco)}</span></div>${c.actividad?`<div class="links"><a class="btn alt" href="${esc(c.actividad)}" target="_blank" rel="noopener">Hacer la actividad</a></div>`:""}</div></article>`).join("");
+}
+$("#cancion-chips").innerHTML=niveles.map((n,i)=>`<button class="chip" style="--c:var(--pink)" aria-pressed="${i===0}">${esc(n)}</button>`).join("");
+$("#cancion-chips").addEventListener("click",e=>{const b=e.target.closest(".chip");if(!b)return;
+  document.querySelectorAll("#cancion-chips .chip").forEach(c=>c.setAttribute("aria-pressed",c===b));pintarCanciones(b.textContent)});
+$("#canciones-list").addEventListener("click",e=>{const b=e.target.closest("button[data-yt]");if(!b)return;
+  b.parentElement.innerHTML=`<iframe src="https://www.youtube-nocookie.com/embed/${b.dataset.yt}?autoplay=1&rel=0" title="${b.dataset.t}" allow="autoplay;encrypted-media;picture-in-picture;fullscreen" allowfullscreen></iframe>`});
+pintarCanciones("Todas");
+
+/* Todas las tareas */
+const grupos=[...DATA.clases.map(c=>({...c,sec:"Clase"})),...DATA.atscaf.map(a=>({...a,sec:"ATSCAF"}))];
+$("#all-tasks").innerHTML=grupos.map(g=>`<div class="group"><h3><span class="sticker" style="--c:${col(g.color)}">${g.emoji} ${esc(g.sec)} · ${esc(g.nombre)}</span></h3>${tareasHTML(g.tareas)}</div>`).join("");
+bindTareas($("#all-tasks"));
+
+/* Foro (Padlet incrustado) */
+function pintarForo(f){
+  const e=$("#foro-embed");
+  e.innerHTML=f.padlet?`<iframe src="${esc(f.padlet)}" title="Foro ${esc(f.nombre)}" allow="camera;microphone;geolocation;display-capture;clipboard-write"></iframe>`
+    :`<p style="font-size:2.4rem" aria-hidden="true">💬</p><h3>El foro «${esc(f.nombre)}» está en preparación</h3><p>Pronto podrás escribir aquí.</p>`;
+}
+$("#foro-chips").innerHTML=DATA.foros.map((f,i)=>`<button class="chip" style="--c:${col(f.color)}" data-i="${i}" aria-pressed="${i===0}">${esc(f.nombre)}</button>`).join("");
+$("#foro-chips").addEventListener("click",e=>{const b=e.target.closest(".chip");if(!b)return;
+  document.querySelectorAll("#foro-chips .chip").forEach(c=>c.setAttribute("aria-pressed",c===b));pintarForo(DATA.foros[b.dataset.i])});
+pintarForo(DATA.foros[0]);
+
+route();
+</script>
+</body>
+</html>
