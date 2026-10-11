@@ -107,6 +107,7 @@ details th{background:var(--c)}
 .card .body .links{display:flex;gap:10px;flex-wrap:wrap}
 .btn.alt{background:var(--white);color:var(--ink)}
 .btn.alt:hover{background:var(--yellow)}
+.pending{opacity:.6;border-style:dashed!important;cursor:default}
 .fiche ul{padding-left:1.2em;display:grid;gap:4px;margin:8px 0 12px}
 .fiche .tema{font:600 .9rem var(--display);font-weight:600;margin-right:8px}
 
@@ -201,6 +202,10 @@ footer{border-top:4px solid var(--ink);background:var(--ink);color:var(--white);
    Sustituye los "#" por los enlaces de tus documentos (Drive, Canva, Padlet...).
    type: pdf | doc | video | audio | link | canva
 */
+/* Pega entre las comillas el enlace CSV de tu hoja de Google Sheets (ver instrucciones).
+   Si lo dejas vacío, la página usa los contenidos escritos más abajo. */
+const SHEET_URL = "";
+
 const DATA = {
   clases: [
     {id:"c1", nombre:"2nde", emoji:"🌞", color:"--yellow", desc:"Descubrir, hablar y escribir sobre lo cotidiano.",
@@ -226,12 +231,10 @@ const DATA = {
   ],
   gramatica:[
     {titulo:"ser-estar", color:"--yellow", html:"<p><b>Ser</b>: identidad, origen, profesión, características. <b>Estar</b>: estado, lugar, acciones en curso.</p><table><tr><th>Ser</th><th>Estar</th></tr><tr><td>Soy profesora.</td><td>Estoy cansada.</td></tr><tr><td>Madrid es grande.</td><td>Madrid está en España.</td></tr></table>"},
-    {titulo:"tiempos del pasado ", color:"--pink", html:"<p><b>Indefinido</b>: acción terminada (<i>ayer comí paella</i>). <b>Imperfecto</b>: descripción y hábito pasado (<i>cuando era niño, comía paella</i>).</p>"},
+    {titulo:"tiempos del pasado", color:"--pink", html:"<p><b>Indefinido</b>: acción terminada (<i>ayer comí paella</i>). <b>Imperfecto</b>: descripción y hábito pasado (<i>cuando era niño, comía paella</i>).</p>"},
     {titulo:"El subjuntivo", color:"--mint", html:"<p>Se usa para deseo, duda, emoción y opinión negativa: <i>quiero que vengas</i>, <i>dudo que sea verdad</i>, <i>no creo que tenga razón</i>.</p>"},
     {titulo:"Conectores para argumentar", color:"--orange", html:"<p><b>Añadir</b>: además, asimismo. <b>Oponer</b>: sin embargo, no obstante. <b>Concluir</b>: en definitiva, por lo tanto.</p>"},
-    {titulo:"presente de indicativo", url:"https://view.genially.com/6141fd0192076b0e0ae74fca"},
-  
-  
+    {titulo:"presente de indicativo", color:"--blue", html:"<p>Ficha interactiva: pulsa el botón para abrirla.</p><p><a class='btn' href='https://view.genially.com/6141fd0192076b0e0ae74fca' target='_blank' rel='noopener'>Abrir la ficha interactiva</a></p>"}
   ],
   gramLinks:[
     {titulo:"Diccionario de la RAE", url:"https://dle.rae.es"},
@@ -284,6 +287,51 @@ const DATA = {
 };
 /* ========= FIN DE LA ZONA EDITABLE ========= */
 
+/* ===== Lector de la hoja de cálculo (no hace falta tocar nada aquí) ===== */
+const norm=s=>(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().trim();
+const escH=s=>String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;");
+const hay=u=>!!u&&u!=="#";
+const COLORES={amarillo:"--yellow",rosa:"--pink",menta:"--mint",naranja:"--orange",lila:"--lilac",azul:"--blue"};
+const CICLO=["--yellow","--pink","--mint","--orange","--lilac","--blue"];
+function parseCSV(t){const rows=[];let r=[],c="",q=false;
+  for(let i=0;i<t.length;i++){const ch=t[i];
+    if(q){if(ch==='"'){if(t[i+1]==='"'){c+='"';i++}else q=false}else c+=ch}
+    else if(ch==='"')q=true;
+    else if(ch===","){r.push(c);c=""}
+    else if(ch==="\n"){r.push(c);rows.push(r);r=[];c=""}
+    else if(ch!=="\r")c+=ch}
+  if(c||r.length){r.push(c);rows.push(r)}return rows}
+function isoFecha(f){f=(f||"").trim();let m=f.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+  if(m)return `${m[1]}-${m[2].padStart(2,"0")}-${m[3].padStart(2,"0")}`;
+  m=f.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+  if(m)return `${m[3]}-${m[2].padStart(2,"0")}-${m[1].padStart(2,"0")}`;return ""}
+async function cargarHoja(){
+  const res=await fetch(SHEET_URL,{cache:"no-store"});if(!res.ok)throw new Error("hoja no disponible");
+  const rows=parseCSV(await res.text());if(rows.length<2)return null;
+  const H=rows[0].map(norm);
+  const lista=rows.slice(1).map(r=>{const o={};H.forEach((h,i)=>o[h]=(r[i]||"").trim());return o}).filter(o=>o.tipo);
+  const out={clases:[],atscaf:[],gramatica:[],gramLinks:[],noticias:[],cultura:[],canciones:[],foros:[]};
+  let n=0;const color=c=>COLORES[norm(c)]||CICLO[n++%CICLO.length];
+  const grupo=(arr,o)=>arr.push({id:"g"+norm(o.grupo),nombre:o.grupo,emoji:o.emoji||"📘",color:color(o.color),desc:o.detalle,recursos:[],tareas:[]});
+  lista.forEach(o=>{const t=norm(o.tipo);if(t==="clase")grupo(out.clases,o);else if(t==="grupo atscaf")grupo(out.atscaf,o)});
+  const buscar=g=>[...out.clases,...out.atscaf].find(x=>norm(x.nombre)===norm(g));
+  lista.forEach(o=>{const t=norm(o.tipo),g=buscar(o.grupo);
+    if(t==="documento"&&g)g.recursos.push({titulo:o.titulo,tipo:norm(o.extra)||"link",nota:o.detalle,url:o.enlace});
+    else if(t==="tarea"&&g)g.tareas.push({id:"t-"+norm(o.grupo+o.titulo),titulo:o.titulo,fecha:isoFecha(o.fecha)});
+    else if(t==="ficha")out.gramatica.push({titulo:o.titulo,color:color(o.color),html:"<p>"+escH(o.detalle)+"</p>"+(hay(o.enlace)?`<p><a class="btn" href="${escH(o.enlace)}" target="_blank" rel="noopener">Abrir la ficha interactiva</a></p>`:"")});
+    else if(t==="enlace util")out.gramLinks.push({titulo:o.titulo,url:o.enlace});
+    else if(t==="dosier")out.noticias.push({tema:o.grupo,titulo:o.titulo,txt:o.detalle,url:o.enlace,color:color(o.color)});
+    else if(t==="cultura")out.cultura.push({tema:o.grupo,titulo:o.titulo,color:color(o.color),puntos:o.detalle.split("|").map(s=>s.trim()).filter(Boolean),enlace:o.enlace});
+    else if(t==="cancion")out.canciones.push({titulo:o.titulo,artista:o.detalle,nivel:o.grupo,color:color(o.color),foco:o.extra,video:o.enlace,actividad:o.enlace2});
+    else if(t==="foro")out.foros.push({nombre:o.grupo,color:color(o.color),padlet:o.enlace})});
+  Object.keys(out).forEach(k=>{if(!out[k].length)delete out[k]});
+  return out}
+(async()=>{
+  if(SHEET_URL){try{const d=await cargarHoja();if(d)Object.assign(DATA,d)}catch(e){console.warn("Se usan los contenidos del archivo:",e)}}
+  arrancar();
+})();
+
+function arrancar(){
 const ICONOS={pdf:"📄",doc:"📝",video:"🎬",audio:"🎧",link:"🔗",canva:"🎨"};
 const PAGES=[
   {id:"inicio",label:"Inicio",em:"🏠",c:"--yellow",d:""},
@@ -329,12 +377,17 @@ if(!matchMedia("(prefers-reduced-motion:reduce)").matches){
 }
 
 /* Componentes */
+const hayEnlace=u=>!!u&&u.trim()!==""&&u.trim()!=="#";
 function recursosHTML(list){
-  return `<ul class="list">`+list.map(r=>`<li><a href="${esc(r.url)}" target="_blank" rel="noopener"><span class="ico" aria-hidden="true">${ICONOS[r.tipo]||"🔗"}</span><span>${esc(r.titulo)}<small>${esc(r.nota||"")}</small></span></a></li>`).join("")+`</ul>`;
+  return `<ul class="list">`+list.map(r=>{
+    const ok=hayEnlace(r.url);
+    const inner=`<span class="ico" aria-hidden="true">${ICONOS[r.tipo]||"🔗"}</span><span>${esc(r.titulo)}<small>${esc(r.nota||"")}${ok?"":" · enlace pendiente"}</small></span>`;
+    return ok?`<li><a href="${esc(r.url)}" target="_blank" rel="noopener">${inner}</a></li>`:`<li><div class="res pending">${inner}</div></li>`;
+  }).join("")+`</ul>`;
 }
 function tareasHTML(list){
   if(!list.length)return "<p>No hay tareas por ahora. ¡Disfruta!</p>";
-  return `<div style="display:grid;gap:10px">`+list.map(t=>`<label class="task"><input type="checkbox" data-t="${t.id}" ${done[t.id]?"checked":""}><span><span class="t">${esc(t.titulo)}</span><br><span class="d">Para el ${fechaFR(t.fecha)}</span></span></label>`).join("")+`</div>`;
+  return `<div style="display:grid;gap:10px">`+list.map(t=>`<label class="task"><input type="checkbox" data-t="${t.id}" ${done[t.id]?"checked":""}><span><span class="t">${esc(t.titulo)}</span><br><span class="d">${t.fecha?"Para el "+fechaFR(t.fecha):"Sin fecha"}</span></span></label>`).join("")+`</div>`;
 }
 function bindTareas(root){
   root.querySelectorAll("input[data-t]").forEach(i=>i.addEventListener("change",()=>{done[i.dataset.t]=i.checked;guardar();
@@ -359,12 +412,14 @@ selector(DATA.atscaf,"#atscaf-chips","#atscaf-panel");
 
 /* Gramática */
 $("#gram").innerHTML=DATA.gramatica.map(g=>`<details style="--c:${col(g.color)}"><summary>${esc(g.titulo)}</summary><div class="in">${g.html}</div></details>`).join("");
-$("#gram-links").innerHTML=DATA.gramLinks.map(l=>`<li><a href="${esc(l.url)}" target="_blank" rel="noopener"><span class="ico" aria-hidden="true">🔗</span>${esc(l.titulo)}</a></li>`).join("");
+$("#gram-links").innerHTML=DATA.gramLinks.map(l=>hayEnlace(l.url)
+  ?`<li><a href="${esc(l.url)}" target="_blank" rel="noopener"><span class="ico" aria-hidden="true">🔗</span>${esc(l.titulo)}</a></li>`
+  :`<li><div class="res pending"><span class="ico" aria-hidden="true">🔗</span><span>${esc(l.titulo)}<small>enlace pendiente</small></span></div></li>`).join("");
 
 /* Actualidad con filtro */
 const temas=["Todos",...new Set(DATA.noticias.map(n=>n.tema))];
 function pintarNoticias(t){
-  $("#news").innerHTML=DATA.noticias.filter(n=>t==="Todos"||n.tema===t).map(n=>`<article class="card"><div class="top" style="--c:${col(n.color)}">${esc(n.tema)}</div><div class="body"><h3>${esc(n.titulo)}</h3><p>${esc(n.txt)}</p><a class="btn" href="${esc(n.url)}" target="_blank" rel="noopener">Abrir dosier</a></div></article>`).join("");
+  $("#news").innerHTML=DATA.noticias.filter(n=>t==="Todos"||n.tema===t).map(n=>`<article class="card"><div class="top" style="--c:${col(n.color)}">${esc(n.tema)}</div><div class="body"><h3>${esc(n.titulo)}</h3><p>${esc(n.txt)}</p>${hayEnlace(n.url)?`<a class="btn" href="${esc(n.url)}" target="_blank" rel="noopener">Abrir dosier</a>`:`<span class="btn alt pending">Enlace pendiente</span>`}</div></article>`).join("");
 }
 $("#news-chips").innerHTML=temas.map((t,i)=>`<button class="chip" style="--c:var(--yellow)" aria-pressed="${i===0}">${esc(t)}</button>`).join("");
 $("#news-chips").addEventListener("click",e=>{const b=e.target.closest(".chip");if(!b)return;
@@ -417,6 +472,7 @@ $("#foro-chips").addEventListener("click",e=>{const b=e.target.closest(".chip");
 pintarForo(DATA.foros[0]);
 
 route();
+}
 </script>
 </body>
 </html>
